@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UNIQLO 배송 안내</title>
+    <style>
+        body { font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif; line-height: 1.6; color: #1b1b1b; margin: 0; padding: 0; background-color: #f4f4f4; }
+        .container { max-width: 600px; margin: 20px auto; background: #ffffff; border-top: 4px solid #ed0000; }
+        .header { padding: 40px 30px; text-align: left; }
+        .header h1 { font-size: 24px; font-weight: 700; margin: 0; letter-spacing: -0.5px; }
+        .status-badge { display: inline-block; background: #ed0000; color: #fff; padding: 4px 12px; font-size: 12px; font-weight: bold; margin-bottom: 15px; }
+        
+        .content { padding: 0 30px 40px; }
+        .order-card { background: #f9f9f9; padding: 25px; border-radius: 8px; margin-bottom: 25px; }
+        .order-row { display: flex; justify-content: space-between; margin-bottom: 10px; border-bottom: 1px solid #eee; padding-bottom: 10px; }
+        .order-row:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+        .label { color: #888; font-size: 14px; width: 80px; }
+        .value { font-weight: 600; font-size: 14px; text-align: right; word-break: break-all; }
+
+        .btn-group { text-align: center; margin-top: 10px; }
+        .btn { display: block; background: #1b1b1b; color: #fff; text-decoration: none; padding: 15px; font-weight: bold; font-size: 15px; border-radius: 4px; margin-bottom: 10px; }
+        .btn-sub { display: inline-block; color: #666; text-decoration: underline; font-size: 13px; margin-top: 10px; }
+
+        .notice { font-size: 12px; color: #888; padding: 20px 30px; border-top: 1px solid #eee; }
+        .notice ul { padding-left: 18px; margin: 10px 0 0; }
+        .notice li { margin-bottom: 5px; }
+
+        .footer { padding: 30px; background: #f4f4f4; text-align: center; font-size: 11px; color: #999; }
+        .footer a { color: #999; text-decoration: none; margin: 0 10px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="status-badge">SHIPPING START</div>
+            <h1>이 규원 고객님,<br>주문하신 상품이 출고되었습니다.</h1>
+            <p style="color: #666; font-size: 15px; margin-top: 10px;">기다려 주셔서 감사합니다. 곧 상품을 받아보실 수 있습니다.</p>
+        </div>
+
+        <div class="content">
+            <div class="order-card">
+                <div class="order-row">
+                    <span class="label">주문번호</span>
+                    <span class="value">0530020002601060651-0966116</span>
+                </div>
+                <div class="order-row">
+                    <span class="label">택배사</span>
+                    <span class="value">롯데 택배</span>
+                </div>
+                <div class="order-row">
+                    <span class="label">송장번호</span>
+                    <span class="value">316635815425</span>
+                </div>
+            </div>
+
+            <div class="btn-group">
+                <a href="https://www.lotteglogis.com/mobile/reservation/tracking/linkView?InvNo=316635815425" class="btn">실시간 배송 조회하기</a>
+                <a href="https://www.uniqlo.com/kr/ko/member/orders/online-store" class="btn-sub">구매 내역 확인</a>
+            </div>
+        </div>
+
+        <div class="notice">
+            <strong>배송 관련 안내</strong>
+            <ul>
+                <li>영업일 기준 1~3일 이내에 상품을 받아보실 수 있습니다.</li>
+                <li>출고 직후에는 택배사 시스템 등록 전이라 조회가 안 될 수 있습니다. 다음 날 다시 확인해 주세요.</li>
+                <li>기상 악화나 택배사 사정에 따라 배송일이 다소 지연될 수 있습니다.</li>
+            </ul>
+        </div>
+
+        <div class="footer">
+            <p>본 메일은 발신 전용입니다. 문의사항은 고객센터를 이용해 주세요.</p>
+            <div style="margin-top: 10px;">
+                <a href="https://www.uniqlo.com/kr/ko/">UNIQLO 홈페이지</a> | 
+                <a href="https://faq-kr.uniqlo.com/">고객센터</a>
+            </div>
+            <p style="margin-top: 20px;">&copy; UNIQLO Co., Ltd. All Rights Reserved.</p>
+        </div>
+    </div>
+</body>
+</html>

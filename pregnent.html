@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>임신 및 출산 준비 체크리스트</title>
+    <style>
+        :root {
+            --bg-color: #f8f9fa;
+            --card-bg: #ffffff;
+            --primary-color: #748ffc;
+            --text-color: #495057;
+            --accent-color: #edf2ff;
+        }
+        body {
+            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+        .container {
+            max-width: 500px;
+            width: 100%;
+        }
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        h1 {
+            font-size: 1.5rem;
+            color: var(--primary-color);
+            margin-bottom: 5px;
+        }
+        .timeline-section {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+        .week-title {
+            font-weight: 700;
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            color: var(--primary-color);
+        }
+        .week-title::before {
+            content: '';
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            background-color: var(--primary-color);
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+        .check-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+            cursor: pointer;
+        }
+        .check-item input[type="checkbox"] {
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--primary-color);
+            border-radius: 6px;
+            margin-right: 12px;
+            cursor: pointer;
+            position: relative;
+        }
+        .check-item input[type="checkbox"]:checked {
+            background-color: var(--primary-color);
+        }
+        .check-item input[type="checkbox"]:checked::after {
+            content: '✓';
+            position: absolute;
+            color: white;
+            font-size: 14px;
+            left: 3px;
+            top: -2px;
+        }
+        .check-item input[type="checkbox"]:checked + span {
+            text-decoration: line-through;
+            color: #adb5bd;
+        }
+        .check-item span {
+            font-size: 0.95rem;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>D-Day 준비 리스트</h1>
+        <p style="font-size: 0.85rem; color: #868e96;">건강한 출산을 기원합니다</p>
+    </header>
+
+    <div class="timeline-section">
+        <div class="week-title">20주</div>
+        <label class="check-item"><input type="checkbox"> <span>정밀 초음파 검사</span></label>
+        <label class="check-item"><input type="checkbox"> <span>태아보험 가입</span></label>
+    </div>
+
+    <div class="timeline-section">
+        <div class="week-title">24주</div>
+        <label class="check-item"><input type="checkbox"> <span>임신성 당뇨 검사</span></label>
+        <label class="check-item"><input type="checkbox"> <span>육아용품 리스트 작성 및 구매 시작</span></label>
+    </div>
+
+    <div class="timeline-section">
+        <div class="week-title">28주</div>
+        <label class="check-item"><input type="checkbox"> <span>입체 초음파 검사</span></label>
+        <label class="check-item"><input type="checkbox"> <span>만삭 사진 촬영</span></label>
+        <label class="check-item"><input type="checkbox"> <span>육아교육 수강</span></label>
+    </div>
+
+    <div class="timeline-section">
+        <div class="week-title">32주</div>
+        <label class="check-item"><input type="checkbox"> <span>백일해 예방접종</span></label>
+        <label class="check-item"><input type="checkbox"> <span>산후조리원 필요용품 체크 및 구매</span></label>
+    </div>
+
+    <div class="timeline-section">
+        <div class="week-title">36주</div>
+        <label class="check-item"><input type="checkbox"> <span>출산 준비 용품 구매 완료</span></label>
+        <label class="check-item"><input type="checkbox"> <span>출산 가방 싸기</span></label>
+        <label class="check-item"><input type="checkbox"> <span>아기 옷 및 손수건 세탁</span></label>
+        <label class="check-item"><input type="checkbox"> <span>집청소 및 에어컨 청소</span></label>
+        <label class="check-item"><input type="checkbox"> <span>산후 도우미 신청</span></label>
+        <label class="check-item"><input type="checkbox"> <span>카시트 설치</span></label>
+        <label class="check-item"><input type="checkbox"> <span>이름 짓기</span></label>
+    </div>
+
+    <div class="timeline-section">
+        <div class="week-title">40주 (출산)</div>
+        <label class="check-item"><input type="checkbox"> <span>출생신고</span></label>
+        <label class="check-item"><input type="checkbox"> <span>각종 지원금 및 지원 프로그램 신청</span></label>
+    </div>
+</div>
+
+</body>
+</html>

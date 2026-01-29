@@ -1,0 +1,982 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>휴직 타임라인 계산기</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+KR:wght@400;500;700&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #f3f4f6;
+            --card-bg: #ffffff;
+            --text-primary: #1f2937;
+            --text-secondary: #6b7280;
+            --border-color: #e5e7eb;
+
+            /* Theme Colors */
+            --annual-color: #f59e0b;
+            --annual-bg: #fffbeb;
+            --maternity-color: #ec4899;
+            --maternity-bg: #fdf2f8;
+            --parental-color: #3b82f6;
+            --parental-bg: #eff6ff;
+            --info-color: #10b981;
+            --info-bg: #ecfdf5;
+
+            --radius-md: 12px;
+            --radius-lg: 20px;
+            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+
+            --font-family: 'Inter', 'Noto Sans KR', -apple-system, sans-serif;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-family);
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 24px;
+        }
+
+        .wrapper {
+            width: 100%;
+            max-width: 1100px;
+            display: grid;
+            grid-template-columns: 1fr 1.2fr;
+            gap: 32px;
+            /* align-items: stretch; is default */
+        }
+
+        @media (max-width: 900px) {
+            .wrapper {
+                grid-template-columns: 1fr;
+                gap: 24px;
+            }
+        }
+
+        @media (max-width: 600px) {
+            body {
+                padding: 10px;
+                /* Minimal padding */
+                display: block;
+                /* Avoid flex centering issues */
+            }
+
+            .wrapper {
+                gap: 16px;
+                max-width: 100%;
+            }
+
+            .card,
+            .timeline-card,
+            .info-card {
+                padding: 16px;
+                border-radius: 16px;
+                width: 100%;
+            }
+
+            /* Fix input overflow */
+            .date-input-group {
+                gap: 6px;
+                padding: 10px;
+            }
+
+            .date-input-group input {
+                min-width: 0;
+                flex: 1;
+                font-size: 0.85rem;
+            }
+
+            h2 {
+                font-size: 1.5rem;
+            }
+
+            /* Stack dashboard items */
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        header {
+            text-align: left;
+            margin-bottom: 10px;
+            grid-column: 1 / -1;
+        }
+
+        h2 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+            letter-spacing: -0.025em;
+        }
+
+        .description {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+
+        /* --- LEFT PANEL --- */
+        .input-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            height: 100%;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 5px;
+        }
+
+        .card.annual::before {
+            background-color: var(--annual-color);
+        }
+
+        .card.maternity::before {
+            background-color: var(--maternity-color);
+        }
+
+        .card.parental::before {
+            background-color: var(--parental-color);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 12px;
+            border-radius: 9999px;
+            font-size: 0.825rem;
+            font-weight: 600;
+        }
+
+        .card.annual .badge {
+            background-color: var(--annual-bg);
+            color: var(--annual-color);
+        }
+
+        .card.maternity .badge {
+            background-color: var(--maternity-bg);
+            color: var(--maternity-color);
+        }
+
+        .card.parental .badge {
+            background-color: var(--parental-bg);
+            color: var(--parental-color);
+        }
+
+        .date-input-group {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: #f9fafb;
+            padding: 12px;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-color);
+            transition: border-color 0.2s;
+        }
+
+        .date-input-group:focus-within {
+            border-color: #cbd5e1;
+        }
+
+        input[type="date"] {
+            border: none;
+            background: transparent;
+            font-family: var(--font-family);
+            font-size: 0.9rem;
+            color: var(--text-primary);
+            flex: 1;
+            cursor: pointer;
+            outline: none;
+            text-align: center;
+        }
+
+        .separator {
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .result-area {
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1px solid #f3f4f6;
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+        }
+
+        .result-label {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .result-value {
+            font-size: 1.1rem;
+            font-weight: 700;
+        }
+
+        .hint-text {
+            font-size: 0.8rem;
+            color: #9ca3af;
+            font-weight: 400;
+            margin-left: 6px;
+        }
+
+
+        /* --- RIGHT PANEL --- */
+        .right-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            height: 100%;
+        }
+
+        /* 1. Timeline (Compact) */
+        /* 1. Timeline (Flexible) */
+        .timeline-card {
+            background: white;
+            padding: 24px;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-sm);
+            /* Flexible height */
+            flex: 1;
+            min-height: 280px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .section-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 16px;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .section-subtitle {
+            font-size: 0.85rem;
+            color: #999;
+            font-weight: 400;
+        }
+
+        .timeline-container {
+            flex: 1;
+            position: relative;
+            border-top: 1px solid var(--border-color);
+            margin-top: 5px;
+            overflow-x: auto;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .timeline-header {
+            display: flex;
+            border-bottom: 1px solid #eee;
+            height: 24px;
+            align-items: center;
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+        }
+
+        .month-col {
+            flex: 1;
+            text-align: center;
+            border-right: 1px dashed #f3f4f6;
+            height: 100%;
+            min-width: 25px;
+            position: relative;
+        }
+
+        .month-col:last-child {
+            border-right: none;
+        }
+
+        .month-col span {
+            display: block;
+            margin-top: 6px;
+        }
+
+        .timeline-tracks {
+            position: relative;
+            flex: 1;
+            padding-top: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+            /* Compact gap */
+        }
+
+        .grid-lines {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            display: flex;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .grid-line {
+            flex: 1;
+            border-right: 1px dashed #f8f9fa;
+        }
+
+        .timeline-bar-row {
+            height: 34px;
+            /* Increased to fit 30px bar */
+            position: relative;
+            z-index: 1;
+            width: 100%;
+        }
+
+        .timeline-bar {
+            position: absolute;
+            height: 30px;
+            border-radius: 6px;
+            top: 2px;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            padding-left: 8px;
+            color: white;
+            font-size: 0.75rem;
+            font-weight: 600;
+            overflow: hidden;
+            white-space: nowrap;
+            opacity: 0;
+            transition: all 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+
+        .timeline-bar.active {
+            opacity: 1;
+        }
+
+        .t-annual {
+            background: var(--annual-color);
+        }
+
+        .t-maternity {
+            background: var(--maternity-color);
+        }
+
+        .t-parental {
+            background: var(--parental-color);
+        }
+
+        .bar-label {
+            background: rgba(0, 0, 0, 0.15);
+            padding: 1px 6px;
+            border-radius: 3px;
+            margin-right: 6px;
+            font-size: 0.65rem;
+        }
+
+        /* 2. Summary Dashboard (New Feature) */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            /* 3 Columns in one row */
+            gap: 12px;
+            margin-bottom: 20px;
+            /* Space between dashboard and timeline */
+        }
+
+        .info-card {
+            background: white;
+            padding: 16px;
+            /* Reduced padding */
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-sm);
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            /* Align content to top */
+            min-height: 100px;
+        }
+
+        .info-card.full-width {
+            grid-column: auto;
+            /* Remove span */
+            background: var(--text-primary);
+            color: white;
+        }
+
+        .info-label {
+            font-size: 0.75rem;
+            /* Smaller label */
+            color: var(--text-secondary);
+            font-weight: 500;
+            margin-bottom: 4px;
+        }
+
+        .info-card.full-width .info-label {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .info-value {
+            font-size: 1.125rem;
+            /* ~18px */
+            font-weight: 800;
+            color: var(--text-primary);
+        }
+
+        .info-card.full-width .info-value {
+            color: white;
+            font-size: 1.125rem;
+            /* ~18px */
+        }
+
+        .info-sub {
+            font-size: 0.8rem;
+            margin-top: 4px;
+            color: #10b981;
+            font-weight: 600;
+        }
+
+        .info-card.full-width .info-sub {
+            color: #818cf8;
+        }
+
+        /* Icon containers */
+        .icon-box {
+            width: 24px;
+            height: 24px;
+            border-radius: 6px;
+            display: flex;
+            justify-content: center;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+        }
+
+        /* Ad Banner Placeholder */
+        .ad-banner {
+            margin-top: 20px;
+            width: 100%;
+            height: 100px;
+            background-color: #f3f4f6;
+            border: 2px dashed #d1d5db;
+            border-radius: var(--radius-lg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #9ca3af;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        /* Footer */
+        footer {
+            margin-top: 40px;
+            text-align: center;
+            color: #9ca3af;
+            font-size: 0.85rem;
+            padding-bottom: 20px;
+            grid-column: 1 / -1;
+            /* Stretch across columns in grid */
+        }
+
+        footer .contact {
+            margin-top: 4px;
+            font-size: 0.8rem;
+        }
+
+
+        .bg-orange {
+            background: #fff7ed;
+            color: #ea580c;
+        }
+
+        .bg-blue {
+            background: #eff6ff;
+            color: #2563eb;
+        }
+
+        .bg-dark {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+        }
+
+        .duration-select {
+            border: none;
+            background: #f3f4f6;
+            font-family: var(--font-family);
+            font-size: 0.8rem;
+            color: var(--text-primary);
+            font-weight: 600;
+            cursor: pointer;
+            outline: none;
+            text-align: center;
+            padding: 4px 8px;
+            border-radius: 6px;
+        }
+
+        .input-label {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            font-weight: 600;
+            white-space: nowrap;
+            width: 50px;
+            /* Fixed width for alignment */
+        }
+
+        .input-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .input-row .date-input-group {
+            flex: 1;
+        }
+
+        /* Toggle Switch */
+        .toggle-label {
+            position: relative;
+            display: inline-block;
+            width: 36px;
+            height: 20px;
+        }
+
+        .toggle-label input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #e5e7eb;
+            transition: .3s;
+            border-radius: 20px;
+        }
+
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 2px;
+            bottom: 2px;
+            background-color: white;
+            transition: .3s;
+            border-radius: 50%;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+        }
+
+        input:checked+.toggle-slider {
+            background-color: var(--annual-color);
+        }
+
+        input:checked+.toggle-slider:before {
+            transform: translateX(16px);
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="wrapper">
+        <header>
+            <h2>📅 육아휴직 플래너</h2>
+            <div class="description">휴가부터 복직까지 한번에 관리하세요</div>
+        </header>
+
+        <!-- LEFT PANEL -->
+        <div class="input-panel">
+            <!-- Components -->
+            <div class="card annual">
+                <div class="card-header">
+                    <span class="badge">연차 (평일 기준)</span>
+                    <label class="toggle-label">
+                        <input type="checkbox" id="a-toggle" checked onchange="calculate()">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+                <div class="date-input-group">
+                    <input type="date" id="a-start" value="2026-03-30" onchange="calculate()">
+                    <span class="separator">~</span>
+                    <input type="date" id="a-end" value="2026-04-10" onchange="calculate()">
+                </div>
+                <div class="result-area">
+                    <span class="result-label">소진 연차</span>
+                    <div id="a-res" class="result-value" style="color: var(--annual-color);">-</div>
+                </div>
+            </div>
+
+            <div class="card maternity">
+                <div class="card-header">
+                    <span class="badge">출산 휴가</span>
+                    <select id="m-duration" class="duration-select" onchange="calculate()">
+                        <option value="90">90일</option>
+                        <option value="180" selected>180일</option>
+                    </select>
+                </div>
+                <div class="input-row">
+                    <div class="input-label">시작일</div>
+                    <div class="date-input-group">
+                        <input type="date" id="m-start" value="2026-04-13" onchange="calculate()">
+                    </div>
+                </div>
+                <div class="result-area">
+                    <span class="result-label">종료일</span>
+                    <div id="m-res-date" class="result-value" style="color: var(--maternity-color);">-</div>
+                </div>
+            </div>
+
+            <div class="card parental">
+                <div class="card-header">
+                    <span class="badge">육아 휴직</span>
+                    <select id="p-duration" class="duration-select" onchange="calculate()">
+                        <option value="180">6개월</option>
+                        <option value="365" selected>1년</option>
+                        <option value="730">2년</option>
+                    </select>
+                </div>
+                <div class="input-row">
+                    <div class="input-label">시작일</div>
+                    <div class="date-input-group">
+                        <input type="date" id="p-start" value="2026-10-12" onchange="calculate()">
+                    </div>
+                </div>
+                <div class="result-area">
+                    <span class="result-label">종료일</span>
+                    <div id="p-res-date" class="result-value" style="color: var(--parental-color);">-</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- RIGHT PANEL -->
+        <div class="right-panel">
+
+            <!-- 1. Summary Dashboard (Moved Up) -->
+            <div class="dashboard-grid">
+                <!-- Total Off Days -->
+                <div class="info-card">
+                    <div class="icon-box bg-orange">⏳</div>
+                    <span class="info-label">총 휴직 기간</span>
+                    <div class="info-value" id="total-days-off">0일</div>
+                    <div class="info-sub" id="total-months-off" style="font-size: 0.7rem;">약 0개월</div>
+                </div>
+
+                <!-- D-Day -->
+                <div class="info-card">
+                    <div class="icon-box bg-blue">🚀</div>
+                    <span class="info-label">휴직 시작까지</span>
+                    <div class="info-value" id="d-day-val">-</div>
+                    <div class="info-sub" style="font-size: 0.7rem; opacity:0;">남았습니다</div>
+                </div>
+
+                <!-- Return Date -->
+                <div class="info-card full-width">
+                    <div class="icon-box bg-dark">🏢</div>
+                    <span class="info-label">예상 복직일</span>
+                    <div class="info-value" id="return-date">-</div>
+                </div>
+            </div>
+
+            <!-- 2. Compact Timeline -->
+            <div class="timeline-card">
+                <div class="section-title">
+                    타임라인 <span class="section-subtitle">2026 - 2027</span>
+                </div>
+                <div class="timeline-container" id="timeline-box">
+                    <div class="timeline-header" id="t-header"></div>
+                    <div class="timeline-tracks">
+                        <div class="grid-lines" id="t-grid"></div>
+                        <!-- Bars -->
+                        <div class="timeline-bar-row">
+                            <div id="bar-annual" class="timeline-bar t-annual">
+                                <span class="bar-label">연차</span> <span id="lbl-annual"></span>
+                            </div>
+                        </div>
+                        <div class="timeline-bar-row">
+                            <div id="bar-maternity" class="timeline-bar t-maternity">
+                                <span class="bar-label">출산</span> <span id="lbl-maternity"></span>
+                            </div>
+                        </div>
+                        <div class="timeline-bar-row">
+                            <div id="bar-parental" class="timeline-bar t-parental">
+                                <span class="bar-label">육아</span> <span id="lbl-parental"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Ad Banner Area -->
+            <div class="ad-banner">
+                광고 배너 영역
+            </div>
+
+        </div>
+
+        <footer>
+            <div>© 2026 나를 위한 일하기. All rights reserved.</div>
+            <div class="contact">Contact: smoothworkforme@gmail.com</div>
+        </footer>
+    </div>
+
+    <script>
+        // ---------- CONFIGURATION ----------
+        const holidays = [
+            '2026-01-01', '2026-02-16', '2026-02-17', '2026-02-18', '2026-03-01', '2026-03-02',
+            '2026-05-05', '2026-05-24', '2026-05-25', '2026-06-06', '2026-08-15', '2026-08-17',
+            '2026-09-24', '2026-09-25', '2026-09-26', '2026-10-03', '2026-10-05', '2026-10-09', '2026-12-25'
+        ];
+
+        const TIMELINE_START = new Date('2026-01-01');
+        const TIMELINE_END = new Date('2027-12-31');
+        const TOTAL_DAYS = (TIMELINE_END - TIMELINE_START) / (1000 * 60 * 60 * 24);
+
+        // ---------- UTILS ----------
+        function isBusinessDay(date) {
+            const day = date.getDay();
+            if (day === 0 || day === 6) return false;
+            const dateString = date.toISOString().split('T')[0];
+            return !holidays.includes(dateString);
+        }
+
+        function dateToPercent(dateObj) {
+            let diff = (dateObj - TIMELINE_START) / (1000 * 60 * 60 * 24);
+            let pct = (diff / TOTAL_DAYS) * 100;
+            return Math.max(0, Math.min(100, pct));
+        }
+
+        function formatDateShort(dateObj) {
+            return `${dateObj.getMonth() + 1}/${dateObj.getDate()}`;
+        }
+
+        function formatDateKorean(dateObj) {
+            const y = dateObj.getFullYear() % 100;
+            const m = dateObj.getMonth() + 1;
+            const d = dateObj.getDate();
+            const days = ['일', '월', '화', '수', '목', '금', '토'];
+            const dayName = days[dateObj.getDay()];
+            return `'${y}년 ${m}월 ${d}일 (${dayName})`;
+        }
+
+        // ---------- INITIALIZATION ----------
+        function initTimelineGrid() {
+            const header = document.getElementById('t-header');
+            const grid = document.getElementById('t-grid');
+
+            for (let i = 0; i < 24; i++) {
+                const year = 2026 + Math.floor(i / 12);
+                const month = (i % 12) + 1;
+
+                const mCol = document.createElement('div');
+                mCol.className = 'month-col';
+
+                const span = document.createElement('span');
+                if (month === 1) span.innerText = `${year % 100}.1`;
+                else span.innerText = month;
+                span.style.fontSize = month === 1 ? '0.75rem' : '0.65rem';
+                span.style.fontWeight = month === 1 ? '700' : '400';
+                span.style.color = month === 1 ? '#333' : '#bbb';
+
+                mCol.appendChild(span);
+                header.appendChild(mCol);
+
+                const gLine = document.createElement('div');
+                gLine.className = 'grid-line';
+                grid.appendChild(gLine);
+            }
+        }
+
+        // ---------- CALCULATION ----------
+        function updateBar(barId, labelId, start, end) {
+            if (start > end) {
+                document.getElementById(barId).classList.remove('active');
+                return;
+            }
+
+            const startPct = dateToPercent(start);
+            const endPct = dateToPercent(end);
+            let widthPct = endPct - startPct;
+            if (widthPct < 0.5) widthPct = 0.5;
+
+            const bar = document.getElementById(barId);
+            bar.style.left = startPct + '%';
+            bar.style.width = widthPct + '%';
+            bar.classList.add('active');
+
+            const lbl = document.getElementById(labelId);
+            lbl.innerText = `${formatDateShort(start)}~${formatDateShort(end)}`;
+            if (widthPct < 5) lbl.style.display = 'none';
+            else lbl.style.display = 'inline';
+        }
+
+        function calculate() {
+            // TOGGLE CHECK
+            const annualEnabled = document.getElementById('a-toggle').checked;
+
+            // 1. Get Dates
+            const aStartInput = document.getElementById('a-start');
+            const aEndInput = document.getElementById('a-end');
+
+            // Sync disabled state
+            aStartInput.disabled = !annualEnabled;
+            aEndInput.disabled = !annualEnabled;
+            aStartInput.style.opacity = annualEnabled ? '1' : '0.5';
+            aEndInput.style.opacity = annualEnabled ? '1' : '0.5';
+
+            let aStart = annualEnabled ? new Date(aStartInput.value) : new Date(NaN);
+            let aEnd = annualEnabled ? new Date(aEndInput.value) : new Date(NaN);
+
+            // Maternity Calc
+            const mStartInput = document.getElementById('m-start').value;
+            const mDuration = parseInt(document.getElementById('m-duration').value || 90);
+            let mStart = new Date(mStartInput);
+            let mEnd = new Date(mStart);
+            if (!isNaN(mStart.getTime())) {
+                mEnd.setDate(mStart.getDate() + (mDuration - 1));
+            } else {
+                mEnd = new Date(NaN);
+            }
+
+            // Parental Calc
+            const pStartInput = document.getElementById('p-start').value;
+            const pDuration = parseInt(document.getElementById('p-duration').value || 365);
+            let pStart = new Date(pStartInput);
+            let pEnd = new Date(pStart);
+            if (!isNaN(pStart.getTime())) {
+                pEnd.setDate(pStart.getDate() + (pDuration - 1));
+            } else {
+                pEnd = new Date(NaN);
+            }
+
+            // 2. Individual Text & Logic
+            // Annual
+            let workDays = 0;
+            if (annualEnabled && aStart <= aEnd) {
+                for (let d = new Date(aStart); d <= aEnd; d.setDate(d.getDate() + 1)) {
+                    if (isBusinessDay(new Date(d))) workDays++;
+                }
+            }
+            if (annualEnabled) {
+                document.getElementById('a-res').innerHTML = `${workDays}일 <span class="hint-text">(주말/공휴일 제외)</span>`;
+            } else {
+                document.getElementById('a-res').innerHTML = `<span style="color:#ccc; font-weight:400;">미사용</span>`;
+            }
+
+            // Updated Result Text to show END DATE
+            if (!isNaN(mEnd.getTime())) {
+                document.getElementById('m-res-date').innerText = formatDateKorean(mEnd);
+            }
+            if (!isNaN(pEnd.getTime())) {
+                document.getElementById('p-res-date').innerText = formatDateKorean(pEnd);
+            }
+
+            // 3. Update Timeline
+            if (annualEnabled) updateBar('bar-annual', 'lbl-annual', aStart, aEnd);
+            else document.getElementById('bar-annual').classList.remove('active');
+
+            updateBar('bar-maternity', 'lbl-maternity', mStart, mEnd);
+            updateBar('bar-parental', 'lbl-parental', pStart, pEnd);
+
+            // 4. Update Summary Dashboard
+
+            // Find earliest start and latest end
+            const dates = [aStart, aEnd, mStart, mEnd, pStart, pEnd];
+            const validStarts = [aStart, mStart, pStart].filter(d => !isNaN(d));
+            const validEnds = [aEnd, mEnd, pEnd].filter(d => !isNaN(d));
+
+            if (validStarts.length > 0 && validEnds.length > 0) {
+                const earliest = new Date(Math.min(...validStarts));
+                const latest = new Date(Math.max(...validEnds));
+
+                // Return Date (Next Day)
+                const returnDate = new Date(latest);
+                returnDate.setDate(returnDate.getDate() + 1);
+                document.getElementById('return-date').innerText = formatDateKorean(returnDate);
+
+                // Total Span (Simple difference between Earliest start and Latest end)
+                // Note: This assumes continuous leave. If there are gaps, this measures the span, not sum of days.
+                // Let's use Span for "Period".
+                const totalSpanDays = Math.ceil((latest - earliest) / (1000 * 60 * 60 * 24)) + 1;
+                document.getElementById('total-days-off').innerText = `${totalSpanDays}일`;
+                document.getElementById('total-months-off').innerText = `약 ${(totalSpanDays / 30).toFixed(1)}개월`;
+
+                // D-Day (from today)
+                // Ideally "Today" is real today. 
+                // For demo I will use a fixed date or new Date(). 
+                // Users might want "D-Day to first leave".
+                const today = new Date(); // Real today
+                // Reset time for clean day diff
+                today.setHours(0, 0, 0, 0);
+                earliest.setHours(0, 0, 0, 0);
+
+                const diffTime = earliest - today;
+                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+                let dDayStr = "-";
+                if (diffDays > 0) dDayStr = `D-${diffDays}`;
+                else if (diffDays === 0) dDayStr = "D-Day";
+                else dDayStr = `D+${Math.abs(diffDays)}`;
+
+                document.getElementById('d-day-val').innerText = dDayStr;
+                document.getElementById('d-day-val').style.color = diffDays <= 7 && diffDays >= 0 ? '#ef4444' : '#1f2937';
+            }
+        }
+
+        window.onload = function () {
+            initTimelineGrid();
+            calculate();
+        };
+    </script>
+
+</body>
+
+</html>
