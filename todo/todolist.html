@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Daily Todo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+  <div class="app">
+    <!-- Header Area -->
+    <div class="header">
+      <div class="header-top">
+        <div class="title-main" id="greetingText">Good Day</div>
+        <div class="date-text" id="todayText">...</div>
+      </div>
+
+      <!-- New Tabs -->
+      <div class="tabs-container">
+        <button class="tab-btn active" onclick="setTab('work')">회사 (Work)</button>
+        <button class="tab-btn" onclick="setTab('personal')">개인 (Personal)</button>
+      </div>
+    </div>
+
+    <!-- List Area -->
+    <div class="content">
+      <h2>To Do <span id="countTodo" class="section-count">0</span></h2>
+      <div id="todoEmpty" class="section-subtext" style="display:none;">
+        할 일이 없습니다. 여유로운 하루네요! ☕️
+      </div>
+      <div id="todoList"></div>
+
+      <h2>Completed <span id="countDone" class="section-count">0</span></h2>
+      <div id="doneEmpty" class="section-subtext" style="display:none;">
+        완료된 항목이 없습니다.
+      </div>
+      <div id="doneList"></div>
+    </div>
+
+    <!-- Input Area -->
+    <div class="input-bar-container">
+      <div class="input-box">
+        <input type="text" id="inpTitle" class="main-input" placeholder="새로운 할 일 입력..." />
+        <input type="text" id="inpDesc" class="sub-input" placeholder="메모 추가 (선택)" />
+        <div class="input-footer">
+          <label class="checkbox-label">
+            <input type="checkbox" id="inpUrgent" />
+            <span>긴급 🔥</span>
+          </label>
+          <input type="date" id="inpDueDate" class="sub-input"
+            style="width: auto; height: 32px; padding: 0 8px; border: 1px solid var(--border-color); border-radius: 6px;" />
+          <button class="btn-add" id="btnAdd">추가</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+
+</html>
