@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>휴직 타임라인 계산기</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+KR:wght@400;500;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <div class="wrapper">
+        <header>
+            <h2>📅 육아휴직 플래너</h2>
+            <div class="description">휴가부터 복직까지 한번에 관리하세요</div>
+        </header>
+
+        <!-- LEFT PANEL -->
+        <div class="input-panel">
+            <!-- Components -->
+            <div class="card annual">
+                <div class="card-header">
+                    <span class="badge">연차 (평일 기준)</span>
+                    <label class="toggle-label">
+                        <input type="checkbox" id="a-toggle" checked onchange="calculate()">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+                <div class="date-input-group">
+                    <input type="date" id="a-start" value="2026-03-30" onchange="calculate()">
+                    <span class="separator">~</span>
+                    <input type="date" id="a-end" value="2026-04-10" onchange="calculate()">
+                </div>
+                <div class="result-area">
+                    <span class="result-label">소진 연차</span>
+                    <div id="a-res" class="result-value" style="color: var(--annual-color);">-</div>
+                </div>
+            </div>
+
+            <div class="card maternity">
+                <div class="card-header">
+                    <span class="badge">출산 휴가</span>
+                    <select id="m-duration" class="duration-select" onchange="calculate()">
+                        <option value="90">90일</option>
+                        <option value="180" selected>180일</option>
+                    </select>
+                </div>
+                <div class="input-row">
+                    <div class="input-label">시작일</div>
+                    <div class="date-input-group">
+                        <input type="date" id="m-start" value="2026-04-13" onchange="calculate()">
+                    </div>
+                </div>
+                <div class="result-area">
+                    <span class="result-label">종료일</span>
+                    <div id="m-res-date" class="result-value" style="color: var(--maternity-color);">-</div>
+                </div>
+            </div>
+
+            <div class="card parental">
+                <div class="card-header">
+                    <span class="badge">육아 휴직</span>
+                    <select id="p-duration" class="duration-select" onchange="calculate()">
+                        <option value="180">6개월</option>
+                        <option value="365" selected>1년</option>
+                        <option value="730">2년</option>
+                    </select>
+                </div>
+                <div class="input-row">
+                    <div class="input-label">시작일</div>
+                    <div class="date-input-group">
+                        <input type="date" id="p-start" value="2026-10-12" onchange="calculate()">
+                    </div>
+                </div>
+                <div class="result-area">
+                    <span class="result-label">종료일</span>
+                    <div id="p-res-date" class="result-value" style="color: var(--parental-color);">-</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- RIGHT PANEL -->
+        <div class="right-panel">
+
+            <!-- 1. Summary Dashboard (Moved Up) -->
+            <div class="dashboard-grid">
+                <!-- Total Off Days -->
+                <div class="info-card">
+                    <div class="icon-box bg-orange">⏳</div>
+                    <span class="info-label">총 휴직 기간</span>
+                    <div class="info-value" id="total-days-off">0일</div>
+                    <div class="info-sub" id="total-months-off" style="font-size: 0.7rem;">약 0개월</div>
+                </div>
+
+                <!-- D-Day -->
+                <div class="info-card">
+                    <div class="icon-box bg-blue">🚀</div>
+                    <span class="info-label">휴직 시작까지</span>
+                    <div class="info-value" id="d-day-val">-</div>
+                    <div class="info-sub" style="font-size: 0.7rem; opacity:0;">남았습니다</div>
+                </div>
+
+                <!-- Return Date -->
+                <div class="info-card full-width">
+                    <div class="icon-box bg-dark">🏢</div>
+                    <span class="info-label">예상 복직일</span>
+                    <div class="info-value" id="return-date">-</div>
+                </div>
+            </div>
+
+            <!-- 2. Compact Timeline -->
+            <div class="timeline-card">
+                <div class="section-title">
+                    타임라인 <span class="section-subtitle">2026 - 2027</span>
+                </div>
+                <div class="timeline-container" id="timeline-box">
+                    <div class="timeline-header" id="t-header"></div>
+                    <div class="timeline-tracks">
+                        <div class="grid-lines" id="t-grid"></div>
+                        <!-- Bars -->
+                        <div class="timeline-bar-row">
+                            <div id="bar-annual" class="timeline-bar t-annual">
+                                <span class="bar-label">연차</span> <span id="lbl-annual"></span>
+                            </div>
+                        </div>
+                        <div class="timeline-bar-row">
+                            <div id="bar-maternity" class="timeline-bar t-maternity">
+                                <span class="bar-label">출산</span> <span id="lbl-maternity"></span>
+                            </div>
+                        </div>
+                        <div class="timeline-bar-row">
+                            <div id="bar-parental" class="timeline-bar t-parental">
+                                <span class="bar-label">육아</span> <span id="lbl-parental"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Ad Banner Area -->
+            <div class="ad-banner">
+                광고 배너 영역
+            </div>
+
+        </div>
+
+        <footer>
+            <div>© 2026 나를 위한 일하기. All rights reserved.</div>
+            <div class="contact">Contact: smoothworkforme@gmail.com</div>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+
+</body>
+
+</html>
